@@ -2,24 +2,25 @@
 #include <stdlib.h>
 #include <time.h>
 
-int main(){
-    int num, guess, nguess=0;
+int main()
+{
+    int num, guess, nguess = 0;
     srand(time(0));
-    num=rand()%100 + 1;
+    num = rand() % 100 + 1;
     // printf("The number is %d \n", num);
-    do{
+    do
+    {
         printf("Guess the number between 0 and 100: ");
         scanf("%d", &guess);
-        if(guess>num)
-        printf("Lower number please!\n");
-        else if (guess<num)
+        if (guess > num)
+            printf("Lower number please!\n");
+        else if (guess < num)
         {
             printf("Higher number please!\n");
         }
         else
-        printf("Congratulations, you guessed the number in %d attemps \n", nguess);
+            printf("Congratulations, you guessed the number in %d attemps \n", nguess);
         nguess++;
-    }
-    while(guess!=num);
+    } while (guess != num);
     return 0;
 }
