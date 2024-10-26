@@ -42,7 +42,7 @@ int main(){
         printf("Invalid Choice\n");
         }
     }
-    while(p>=1 && p<=3);
+    while(p!=0);
     printf("Thanks for playing :)");
     return 0;
 }
