@@ -8,7 +8,7 @@ int getcmp()
 }
 void show(int p, int cmp, int *c1, int *c2)
 {
-    printf("You Chose: %d\tComputer Chose: %d\n",p,cmp);
+    printf("You Chose: %s\tComputer Chose: %s\n",p==1?"Stone":p==2?"Paper":"Scissor",cmp==1?"Stone":cmp==2?"Paper":"Scissor");
     if(p==cmp)
     {
         printf("It's a draw :(\n");
