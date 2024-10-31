@@ -94,7 +94,7 @@ void dep_m()
             fseek(ptr, -sizeof(read), SEEK_CUR);
             fwrite(&read, sizeof(read), 1, ptr);
             fclose(ptr);
-            printf("\n%.2f deposited successfully\nNew balance: %.2f\n", amt, read.balance);
+            printf("\n%.2f deposited successfully\nUpdated balance: %.2f\n", amt, read.balance);
             return;
         }
     }
@@ -103,7 +103,40 @@ void dep_m()
 }
 void withdraw_m()
 {
+    bk read;
+    int acc_no;
+    float amt;
+    FILE *ptr = fopen("details.txt", "r+b");
+    if (ptr == NULL)
+    {
+        printf("\nServer Error 404 :(\n");
+        return;
+    }
+    printf("\nEnter the account number: ");
+    scanf("%d", &acc_no);
     printf("\nEnter the amount to withdraw: ");
+    scanf("%f", &amt);
+    while (fread(&read, sizeof(read), 1, ptr))
+    {
+    if(read.balance>=amt){
+        if (read.acc_no == acc_no)
+        {
+            read.balance = read.balance - amt;
+            fseek(ptr, -sizeof(read), SEEK_CUR);
+            fwrite(&read, sizeof(read), 1, ptr);
+            fclose(ptr);
+            printf("\n%.2f was withdrawn successfully\nRemaining balance: %.2f\n", amt, read.balance);
+            return;
+        }
+    }
+    else{
+        printf("\nInsufficient balance!\n");
+        fclose(ptr);
+        return;
+    }
+    }
+    fclose(ptr);
+    printf("\nAmount could not be withdrawn as account number %d was not found :(\n", acc_no);
 }
 void check_b()
 {
