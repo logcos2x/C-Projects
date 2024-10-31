@@ -2,15 +2,17 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
+
 typedef struct bank
 {
     char name[35];
-    double acc_no;
+    int acc_no;
     float balance;
 } bk;
-double ifc()
+int ifc()
 {
-    double code = 0, ran;
+    int code = 0, ran;
     srand(time(0) + rand());
     for (int i = 0; i < 11; i++)
     {
@@ -43,7 +45,7 @@ void cr_acc()
     int unique = 0;
     while (!unique)
     {
-        user.acc_no = ifc();
+        user.acc_no = fabs(ifc());
         unique = 1;
 
         rewind(ptr);
@@ -57,7 +59,7 @@ void cr_acc()
         }
     }
 
-    printf("\nYour generated account number: %0.lf\n", user.acc_no);
+    printf("\nYour generated account number: %d\n", user.acc_no);
     user.balance = 0;
     fwrite(&user, sizeof(user), 1, ptr);
     fclose(ptr);
@@ -74,7 +76,7 @@ void withdraw_m()
 void check_b()
 {
     bk read;
-    double comp;
+    int comp;
     FILE *ptr = fopen("details.txt", "r");
     if (ptr == NULL)
     {
@@ -82,7 +84,7 @@ void check_b()
     }
     printf("\nChecking Balance...\n");
     printf("\nEnter account number: ");
-    scanf("%lf", &comp);
+    scanf("%d", &comp);
     while (fread(&read, sizeof(read), 1, ptr))
     {
         if (read.acc_no == comp)
@@ -93,7 +95,7 @@ void check_b()
         }
     }
     fclose(ptr);
-    printf("\nAccount number %.0lf was not found :(\n", comp);
+    printf("\nAccount number %.d was not found :(\n", comp);
 }
 int main()
 {
