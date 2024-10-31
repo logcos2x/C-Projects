@@ -8,6 +8,7 @@ typedef struct bank
 {
     char name[35];
     int acc_no;
+    int pin;
     float balance;
 } bk;
 int ifc()
@@ -60,6 +61,8 @@ void cr_acc()
     }
 
     printf("Your generated account number: %d\n", user.acc_no);
+    printf("Enter a pin for your account (4 digit recommended): ");
+    scanf("%d", &user.pin);
     user.balance = 0;
     fwrite(&user, sizeof(user), 1, ptr);
     fclose(ptr);
@@ -68,7 +71,7 @@ void cr_acc()
 void dep_m()
 {
     bk read;
-    int acc_no;
+    int acc_no, pin;
     float amt;
     FILE *ptr = fopen("details.txt", "r+b");
     if (ptr == NULL)
@@ -78,23 +81,34 @@ void dep_m()
     }
     printf("\nEnter the account number: ");
     scanf("%d", &acc_no);
-    printf("\nEnter the amount to deposit: ");
-    scanf("%f", &amt);
-    if (amt <= 0)
-    {
-        printf("\nInvalid amount\n");
-        fclose(ptr);
-        return;
-    }
     while (fread(&read, sizeof(read), 1, ptr))
     {
-        if (read.acc_no == acc_no)
+        printf("\nEnter the pin: ");
+        scanf("%d", &pin);
+        if (pin == read.pin)
         {
-            read.balance = read.balance + amt;
-            fseek(ptr, -sizeof(read), SEEK_CUR);
-            fwrite(&read, sizeof(read), 1, ptr);
+            printf("\nEnter the amount to deposit: ");
+            scanf("%f", &amt);
+            if (amt <= 0)
+            {
+                printf("\nInvalid amount\n");
+                fclose(ptr);
+                return;
+            }
+            if (read.acc_no == acc_no)
+            {
+                read.balance = read.balance + amt;
+                fseek(ptr, -sizeof(read), SEEK_CUR);
+                fwrite(&read, sizeof(read), 1, ptr);
+                fclose(ptr);
+                printf("\n%.2f deposited successfully\nUpdated balance: %.2f\n", amt, read.balance);
+                return;
+            }
+        }
+        else
+        {
             fclose(ptr);
-            printf("\n%.2f deposited successfully\nUpdated balance: %.2f\n", amt, read.balance);
+            printf("\nACCESS DENIED!\n");
             return;
         }
     }
@@ -105,6 +119,7 @@ void withdraw_m()
 {
     bk read;
     int acc_no;
+    int pin;
     float amt;
     FILE *ptr = fopen("details.txt", "r+b");
     if (ptr == NULL)
@@ -114,26 +129,39 @@ void withdraw_m()
     }
     printf("\nEnter the account number: ");
     scanf("%d", &acc_no);
-    printf("\nEnter the amount to withdraw: ");
-    scanf("%f", &amt);
     while (fread(&read, sizeof(read), 1, ptr))
     {
-    if(read.balance>=amt){
-        if (read.acc_no == acc_no)
+        printf("\nEnter the pin: ");
+        scanf("%d", &pin);
+        if (pin == read.pin)
         {
-            read.balance = read.balance - amt;
-            fseek(ptr, -sizeof(read), SEEK_CUR);
-            fwrite(&read, sizeof(read), 1, ptr);
+            printf("\nEnter the amount to withdraw: ");
+            scanf("%f", &amt);
+            if (read.balance >= amt)
+            {
+                if (read.acc_no == acc_no)
+                {
+                    read.balance = read.balance - amt;
+                    fseek(ptr, -sizeof(read), SEEK_CUR);
+                    fwrite(&read, sizeof(read), 1, ptr);
+                    fclose(ptr);
+                    printf("\n%.2f was withdrawn successfully\nRemaining balance: %.2f\n", amt, read.balance);
+                    return;
+                }
+            }
+            else
+            {
+                printf("\nInsufficient balance!\n");
+                fclose(ptr);
+                return;
+            }
+        }
+        else
+        {
             fclose(ptr);
-            printf("\n%.2f was withdrawn successfully\nRemaining balance: %.2f\n", amt, read.balance);
+            printf("\nACCESS DENIED!\n");
             return;
         }
-    }
-    else{
-        printf("\nInsufficient balance!\n");
-        fclose(ptr);
-        return;
-    }
     }
     fclose(ptr);
     printf("\nAmount could not be withdrawn as account number %d was not found :(\n", acc_no);
@@ -141,22 +169,33 @@ void withdraw_m()
 void check_b()
 {
     bk read;
-    int comp;
+    int comp, pin;
     FILE *ptr = fopen("details.txt", "r");
     if (ptr == NULL)
     {
         printf("\nServer Error 404 :(\n");
         return;
     }
-    printf("\nChecking Balance...\n");
     printf("\nEnter account number: ");
     scanf("%d", &comp);
     while (fread(&read, sizeof(read), 1, ptr))
     {
-        if (read.acc_no == comp)
+        printf("\nEnter the pin: ");
+        scanf("%d", &pin);
+        if (pin == read.pin)
         {
-            printf("\nYour Account Balance is %.2f\n", read.balance);
+            printf("\nChecking Balance...\n");
+            if (read.acc_no == comp)
+            {
+                printf("\nYour Account Balance is %.2f\n", read.balance);
+                fclose(ptr);
+                return;
+            }
+        }
+        else
+        {
             fclose(ptr);
+            printf("\nACCESS DENIED!\n");
             return;
         }
     }
