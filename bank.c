@@ -59,7 +59,7 @@ void cr_acc()
         }
     }
 
-    printf("\nYour generated account number: %d\n", user.acc_no);
+    printf("Your generated account number: %d\n", user.acc_no);
     user.balance = 0;
     fwrite(&user, sizeof(user), 1, ptr);
     fclose(ptr);
@@ -67,7 +67,39 @@ void cr_acc()
 }
 void dep_m()
 {
+    bk read;
+    int acc_no;
+    float amt;
+    FILE *ptr = fopen("details.txt", "r+b");
+    if (ptr == NULL)
+    {
+        printf("\nServer Error 404 :(\n");
+        return;
+    }
+    printf("\nEnter the account number: ");
+    scanf("%d", &acc_no);
     printf("\nEnter the amount to deposit: ");
+    scanf("%f", &amt);
+    if (amt <= 0)
+    {
+        printf("\nInvalid amount\n");
+        fclose(ptr);
+        return;
+    }
+    while (fread(&read, sizeof(read), 1, ptr))
+    {
+        if (read.acc_no == acc_no)
+        {
+            read.balance = read.balance + amt;
+            fseek(ptr, -sizeof(read), SEEK_CUR);
+            fwrite(&read, sizeof(read), 1, ptr);
+            fclose(ptr);
+            printf("\n%.2f deposited successfully\nNew balance: %.2f\n", amt, read.balance);
+            return;
+        }
+    }
+    fclose(ptr);
+    printf("\nAmount could not be deposited as account number %d was not found :(\n", acc_no);
 }
 void withdraw_m()
 {
@@ -80,7 +112,8 @@ void check_b()
     FILE *ptr = fopen("details.txt", "r");
     if (ptr == NULL)
     {
-        printf("\nServer Error 404 :(");
+        printf("\nServer Error 404 :(\n");
+        return;
     }
     printf("\nChecking Balance...\n");
     printf("\nEnter account number: ");
@@ -119,7 +152,7 @@ int main()
             check_b();
             break;
         case 5:
-            printf("\nThank you for visitng\n");
+            printf("\nThank you for visitng us. Have a good day!\n");
             return 0;
             break;
         default:
