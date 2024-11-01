@@ -13,7 +13,7 @@ void show(int p, int cmp, int *c1, int *c2)
     {
         printf("It's a draw :(\n");
     }
-    else if( p==2 && cmp==1 || p==1 && cmp==3 || p==3 && cmp ==1)
+    else if( p==2 && cmp==1 || p==1 && cmp==3 || p==3 && cmp ==2)
     {
         printf("You win this round!\n");
         (*c1)++;
@@ -39,10 +39,10 @@ int main(){
         show(p, getcmp(),&c1,&c2);
         }
         else{
-        printf("Invalid Choice\n");
+        printf("\nInvalid Choice\n");
         }
     }
     while(p!=0);
-    printf("Thanks for playing :)");
+    printf("\nThanks for playing :)");
     return 0;
 }
